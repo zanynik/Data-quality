@@ -1,0 +1,15 @@
+name: data_quality_service
+version: 1.0.0
+config-version: 2
+profile: data_quality_service
+model-paths: [models]
+macro-paths: [macros]
+target-path: artifacts
+clean-targets: [artifacts, dbt_packages]
+models:
+  data_quality_service:
+    +materialized: view
+tests:
+  data_quality_service:
+    +store_failures: true
+    +schema: dq_audit

@@ -1,0 +1,4 @@
+order_id,customer_email,quantity,status
+ORD-1001,anika@example.com,2,paid
+ORD-1002,bad-email,0,unknown
+ORD-1002,,two,paid

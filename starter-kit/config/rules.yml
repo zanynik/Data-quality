@@ -1,0 +1,42 @@
+dataset: customer_orders
+id_column: order_id
+weights:
+  completeness: 0.40
+  accuracy: 0.35
+  validity: 0.25
+rules:
+  - id: order_id_required
+    column: order_id
+    check: required
+    dimension: Completeness
+    severity: Critical
+  - id: order_id_unique
+    column: order_id
+    check: unique
+    dimension: Validity
+    severity: Critical
+  - id: email_format
+    column: customer_email
+    check: pattern
+    value: '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$'
+    dimension: Accuracy
+    severity: Warning
+  - id: quantity_integer
+    column: quantity
+    check: type
+    value: integer
+    dimension: Accuracy
+    severity: Critical
+  - id: quantity_range
+    column: quantity
+    check: range
+    min: 1
+    max: 50
+    dimension: Accuracy
+    severity: Warning
+  - id: valid_status
+    column: status
+    check: allowed_values
+    value: [pending, paid, shipped, refunded]
+    dimension: Validity
+    severity: Warning

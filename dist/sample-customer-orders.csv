@@ -1,0 +1,13 @@
+order_id,customer_email,phone,country,quantity,unit_price,status,order_date
+ORD-1001,anika@example.com,+4915112345678,DE,2,39.90,paid,2026-08-28
+ORD-1002,rahul@example.com,+919876543210,IN,1,24.50,shipped,2026-08-28
+ORD-1003,bad-email,00491761234567,DE,3,19.99,paid,2026-08-29
+ORD-1004,,+919900112233,IN,2,48.00,pending,2026-08-30
+ORD-1005,sofia@example.com,+33612345678,FR,0,15.00,paid,2026-08-30
+ORD-1006,lars@example.com,+491709998887,DE,4,-8.50,refunded,2026-08-31
+ORD-1007,maya@example.com,,IN,2,31.20,shipped,2026-08-31
+ORD-1008,noah@example.com,+31612345678,NL,5,12.75,paid,not-a-date
+ORD-1009,emma@example.com,+491601234567,DE,2,88.00,unknown,2026-09-01
+ORD-1010,vikram@example.com,+919811223344,IN,two,42.00,paid,2026-09-01
+ORD-1010,vikram@example.com,+919811223344,IN,two,42.00,paid,2026-09-01
+,lee@example.com,+821012345678,KR,1,29.00,paid,2026-09-02

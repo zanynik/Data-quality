@@ -1,0 +1,7 @@
+data_quality_service:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: quality.duckdb
+      threads: 4

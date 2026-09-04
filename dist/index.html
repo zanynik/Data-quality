@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="A metadata-driven CSV data quality workbench with automated profiling, rules, scoring, and failure drilldowns." />
+  <title>Data Quality Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">DQ</span><span>Data Quality<br><strong>Studio</strong></span></div>
+      <nav aria-label="Primary">
+        <button class="nav-item active" data-view="overview"><span>⌁</span> Overview</button>
+        <button class="nav-item" data-view="columns"><span>▦</span> Columns</button>
+        <button class="nav-item" data-view="failures"><span>!</span> Failures <b id="failureBadge">0</b></button>
+        <button class="nav-item" data-view="rules"><span>{ }</span> Rules</button>
+      </nav>
+      <div class="side-bottom">
+          <button class="text-button" id="openArchitecture">System blueprint <span>↗</span></button>
+        <div class="runtime"><i></i><span>Local-first<br><small>Nothing leaves your browser</small></span></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><p class="eyebrow">DATASET WORKBENCH</p><h1 id="datasetTitle">Customer orders</h1></div>
+        <div class="top-actions">
+          <button class="button ghost" id="printReport">Print / PDF</button>
+          <button class="button ghost" id="exportFailures">Export failures</button>
+          <button class="button primary" id="runAnalysis"><span>▶</span> Run assessment</button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="setup-strip">
+          <label class="upload-card" id="dropZone">
+            <input type="file" id="csvInput" accept=".csv,text/csv" />
+            <span class="upload-icon">⇧</span>
+            <span><strong>Drop a CSV here</strong><small>or click to choose a file</small></span>
+          </label>
+          <a class="sample-link" href="sample-customer-orders.csv" download>↓ Sample CSV</a>
+          <div class="dataset-facts">
+            <div><span>Rows</span><strong id="rowCount">12</strong></div>
+            <div><span>Columns</span><strong id="columnCount">8</strong></div>
+            <div><span>Rules</span><strong id="ruleCount">11</strong></div>
+            <div><span>Last run</span><strong id="lastRun">Just now</strong></div>
+          </div>
+          <button class="button sample" id="loadSample">↻ Reset sample</button>
+        </div>
+
+        <div id="overview" class="view active-view">
+          <div class="score-layout">
+            <article class="score-card">
+              <div class="score-head"><span>Overall data quality</span><span class="status-pill" id="scoreStatus">GOOD</span></div>
+              <div class="score-body">
+                <div class="gauge" id="gauge"><div><strong id="overallScore">92</strong><span>%</span><small>QUALITY SCORE</small></div></div>
+                <div class="score-copy"><h2 id="scoreMessage">Ready for analysis</h2><p id="scoreDetail">11 configurable rules across 3 quality dimensions.</p><div class="delta" id="scoreDelta">↑ 2.4 points from previous run</div></div>
+              </div>
+            </article>
+            <article class="dimensions-card">
+              <div class="section-title"><div><span>Dimension health</span><small>Pass rate by evaluated values</small></div><button class="icon-button" title="Scores are weighted by checks evaluated">?</button></div>
+              <div id="dimensionBars" class="dimension-bars"></div>
+            </article>
+          </div>
+
+          <div class="kpi-row">
+            <article class="kpi"><span class="kpi-icon danger">!</span><div><small>Failed validations</small><strong id="failedChecks">9</strong><p id="criticalText">2 critical</p></div></article>
+            <article class="kpi"><span class="kpi-icon warn">∅</span><div><small>Missing values</small><strong id="missingValues">4</strong><p id="missingRate">4.2% of cells</p></div></article>
+            <article class="kpi"><span class="kpi-icon violet">≡</span><div><small>Duplicate rows</small><strong id="duplicateRows">1</strong><p>Exact row matches</p></div></article>
+            <article class="kpi"><span class="kpi-icon cyan">◎</span><div><small>Rules passed</small><strong id="rulesPassed">8 / 11</strong><p id="passRate">72.7% clean</p></div></article>
+          </div>
+
+          <div class="overview-grid">
+            <article class="panel">
+              <div class="section-title"><div><span>Column health</span><small>Lowest scoring fields first</small></div><button class="link-button" data-go="columns">View all →</button></div>
+              <div id="columnHealth" class="column-health"></div>
+            </article>
+            <article class="panel">
+              <div class="section-title"><div><span>Priority findings</span><small>Recommended fixes by impact</small></div><button class="link-button" data-go="failures">Inspect →</button></div>
+              <div id="recommendations" class="recommendations"></div>
+            </article>
+          </div>
+        </div>
+
+        <div id="columns" class="view">
+          <div class="view-heading"><div><p class="eyebrow">COLUMN PROFILING</p><h2>Field-level quality</h2><p>Scores, distributions, nulls and validation failures for every column.</p></div><input class="search-input" id="columnSearch" placeholder="Search columns…" /></div>
+          <div id="columnGrid" class="column-grid"></div>
+        </div>
+
+        <div id="failures" class="view">
+          <div class="view-heading"><div><p class="eyebrow">ROW-LEVEL DRILLDOWN</p><h2>Failed records</h2><p>Trace every issue back to its row, rule and explanation.</p></div><div class="filters"><input class="search-input" id="failureSearch" placeholder="Search failures…" /><select id="severityFilter"><option value="all">All severity</option><option>Critical</option><option>Warning</option><option>Info</option></select><select id="dimensionFilter"><option value="all">All dimensions</option><option>Completeness</option><option>Accuracy</option><option>Validity</option></select></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Row</th><th>Column</th><th>Failed check</th><th>Dimension</th><th>Severity</th><th>Observed value</th><th>Explanation</th></tr></thead><tbody id="failureTable"></tbody></table><div class="empty-state" id="failureEmpty">No failures match these filters.</div></div>
+        </div>
+
+        <div id="rules" class="view">
+          <div class="rules-layout">
+            <div class="rules-copy"><p class="eyebrow">METADATA-DRIVEN</p><h2>Rules as configuration</h2><p>Every check is defined in YAML. Add a dataset or rule without changing application code.</p><div class="rule-principles"><div><span>01</span><p><strong>Define</strong> columns, checks and severity in YAML.</p></div><div><span>02</span><p><strong>Compile</strong> each rule to a reusable dbt test.</p></div><div><span>03</span><p><strong>Score</strong> results consistently and retain history.</p></div></div><button class="button ghost" id="downloadRules">Download rules.yml</button></div>
+            <div class="editor-card"><div class="editor-bar"><span><i></i> rules.yml</span><div><button id="formatRules">Format</button><button id="inferRules">Infer from data</button></div></div><textarea id="ruleEditor" spellcheck="false" aria-label="YAML rules editor"></textarea><div class="editor-footer"><span id="ruleValidation">✓ Configuration valid</span><small>Changes apply on the next run</small></div></div>
+          </div>
+          <div class="catalog"><div class="section-title"><div><span>Supported test catalog</span><small>Reusable checks available in this MVP</small></div></div><div class="catalog-grid" id="catalogGrid"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="architectureModal" aria-hidden="true"><div class="modal-backdrop"></div><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="architectureTitle"><button class="modal-close" aria-label="Close">×</button><p class="eyebrow">IMPLEMENTATION BLUEPRINT</p><h2 id="architectureTitle">Built for local speed, designed to scale</h2><div class="architecture-flow"><div><b>CSV + rules.yml</b><small>Dataset contract</small></div><span>→</span><div><b>Python loader</b><small>Profile + seed DuckDB</small></div><span>→</span><div><b>dbt Core</b><small>Macros + generic tests</small></div><span>→</span><div><b>Report builder</b><small>Portable HTML</small></div></div><p><a class="button primary download-kit" href="data-quality-service-starter.zip" download>Download runnable starter kit</a></p><div class="blueprint-grid"><div><h3>Folder structure</h3><pre>data-quality-service/
+├── config/rules.yml
+├── data/input.csv
+├── dbt_project.yml
+├── models/
+│   ├── staging/
+│   └── quality/
+├── macros/tests/
+├── scripts/
+│   ├── load_csv.py
+│   └── build_report.py
+├── reports/index.html
+└── quality.duckdb</pre></div><div><h3>Scoring method</h3><p>Each rule score is <code>1 − failed / evaluated</code>. Dimension scores are weighted by evaluated values. The overall score uses configurable dimension weights.</p><pre>overall = Σ(dimension_score × weight)
+
+default weights:
+  completeness: 0.40
+  accuracy:     0.35
+  validity:     0.25</pre></div><div><h3>Execution</h3><pre>python scripts/load_csv.py data/input.csv
+dbt build --profiles-dir .
+python scripts/build_report.py
+
+# generated outputs
+reports/index.html
+reports/failures.csv
+artifacts/run_results.json</pre></div><div><h3>Beyond the MVP</h3><p>Persist run summaries for trends, schedule jobs in CI, add cross-dataset lineage, notifications, anomaly detection, role-based access and warehouse adapters.</p></div></div></section></div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "data-quality-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite dist --host 0.0.0.0",
+    "build": "node --check dist/app.js",
+    "test": "node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "vite": "^6.1.0"
+  }
+}
